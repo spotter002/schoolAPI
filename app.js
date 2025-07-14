@@ -12,6 +12,10 @@ app.use(cors())
 // static files accessibility
 app.use('/uploads', express.static('uploads'))
 
+// Route
+const userAuth = require('./routes/loginRoute')
+app.use('/user/Auth', userAuth)
+
 // connect to the database
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
