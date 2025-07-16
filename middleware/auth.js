@@ -32,7 +32,7 @@ const authorizeRoles = (...allowedRoles) => {
     return (req, res, next) => {
         // check if the user role is in the allowed roles
         if (!req.user || !allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({message: 'Access denied, you do not have permission to perform this action'})
+            return res.status(403).json({message: 'Access denied: You do not have permission to perform this action'})
         }
         //proceed to the next middleware or route handler
         next()

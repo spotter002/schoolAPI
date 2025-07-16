@@ -12,9 +12,18 @@ app.use(cors())
 // static files accessibility
 app.use('/uploads', express.static('uploads'))
 
-// Route
+// Routes
+//user route
 const userAuth = require('./routes/loginRoute')
 app.use('/user/Auth', userAuth)
+
+//classroom route
+const classroom = require('./routes/classRoute')
+app.use('/class', classroom)
+
+//teacher route
+const teacher = require('./routes/teacherRoute')
+app.use('/teacher', teacher)
 
 // connect to the database
 mongoose.connect(process.env.MONGO_URI)
