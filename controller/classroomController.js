@@ -1,4 +1,4 @@
-const {Classroom} = require('../model/schooldb')
+const {Classroom, Teacher} = require('../model/schooldb')
 // create a classroom
 exports.addClassroom=async(req,res)=>{
     try {
@@ -45,18 +45,42 @@ exports.getOneClassroom=async(req,res)=>{
 }
 
 // update classroom
-exports.updateClassroom=async(req,res)=>{
-    try {
-        const classroom = await Classroom.findByIdAndUpdate(req.params.id, req.body, {new: true})
-        if(!classroom){
-            return res.status(404).json({message: 'Classroom not found'})
-        }
-        
-        res.status(200).json({message: 'Classroom updated successfully', classroom: classroom})
-    } catch (error) {
-        res.status(500).json({message: 'Internal server error', error: error.message})
+exports.updateClassroom = async (req, res) => {
+  try {
+    const { teacher } = req.body;
+
+    // ✅ Check if teacher exists (only if teacher is in req.body)
+    if (teacher) {
+      const teacherExists = await Teacher.findById(teacher);
+      if (!teacherExists) {
+        return res.status(404).json({ message: 'Teacher not found' });
+      }
     }
-}
+
+    // 🔄 Update classroom
+    const classroom = await Classroom.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).populate('teacher'); // Optional: populate to get teacher details
+
+    if (!classroom) {
+      return res.status(404).json({ message: 'Classroom not found' });
+    }
+
+    return res.status(200).json({
+      message: 'Classroom updated successfully',
+      classroom,
+    });
+  } catch (error) {
+    console.error('Error updating classroom:', error);
+    return res.status(500).json({
+      message: 'Internal server error',
+      error: error.message,
+    });
+  }
+};
+
 
 // delete classroom
 exports.deleteClassroom=async(req,res)=>{
