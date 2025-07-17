@@ -21,6 +21,10 @@ app.use('/user/Auth', userAuth)
 const classroom = require('./routes/classRoute')
 app.use('/class', classroom)
 
+//assignment route
+const assignment = require('./routes/assignmentRoute')
+app.use('/assignment', assignment)
+
 //teacher route
 const teacher = require('./routes/teacherRoute')
 app.use('/teacher', teacher)
