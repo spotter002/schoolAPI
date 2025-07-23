@@ -22,7 +22,7 @@ exports.addAssignment = async (req, res) => {
         const user = await User.findById(userId).populate('teacher')
         //block non teachers
         if(!user || !user.teacher){
-            return res.status(403).json({message: 'Access denied'})
+            return res.status(403).json({message: 'Access denied. Only teachers can add assignments'})
         }
         //get classroom id
         const {classroom:classroomId} = req.body
@@ -39,8 +39,56 @@ exports.addAssignment = async (req, res) => {
         // save the assignment
         const newAssignment = new Assignment(assignmentData)
         await newAssignment.save()
-        res.status(201).json({message: 'Assignment created successfully', assignment: newAssignment})
+        res.status(201).json({message: 'Assignment Posted successfully', assignment: newAssignment})
         }
+    catch (error) {
+            res.status(500).json({ message: 'Internal server error', error: error.message })
+            }
+    }
+
+    //get one assignment
+    exports.getAssignmentById = async (req, res) => {
+        try {
+            const assignment = await Assignment.findById(req.params.id)
+            .populate('classroom')
+            .populate('postedBy','name email phone')
+            if(!assignment){
+                return res.status(404).json({message: 'Assignment not found'})
+            }
+            res.status(200).json(assignment)
+            }
+    
+    catch (error) {
+            res.status(500).json({ message: 'Internal server error', error: error.message })
+            }
+    }
+
+    // upate assignment
+    exports.updateAssignment = async (req, res) => {
+        try {
+            const assignment = await Assignment.findByIdAndUpdate(req.params.id, req.body, { new: true })
+            if(!assignment){
+                return res.status(404).json({message: 'Assignment not found'})
+            }
+            res.status(200).json({message: 'Assignment updated successfully', assignment: assignment})
+            }
+    
+    catch (error) {
+            res.status(500).json({ message: 'Internal server error', error: error.message })
+            }
+    }
+
+    //delete assignment
+    exports.deleteAssignment = async (req, res) => {
+        try {
+            const userId  = req.user.userId
+            const assignment = await Assignment.findByIdAndDelete(req.params.id)
+            if(!assignment){
+                return res.status(404).json({message: 'Assignment not found'})
+                }
+                res.status(200).json({message: 'Assignment deleted successfully'})
+                }
+    
     catch (error) {
             res.status(500).json({ message: 'Internal server error', error: error.message })
             }

@@ -26,8 +26,7 @@ const parentSchema = new Schema({
     email:{type: String},
     phone:{type: String , required: true},
     nationalId:{type: String, required: true , unique: true},
-    address:{type: String},
-    children:[{type: mongoose.Schema.Types.ObjectId, ref: 'Student'}]
+    address:{type: String}
 },{timestamps: true})
 
 // Define the classroom schema

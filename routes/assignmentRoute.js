@@ -6,10 +6,11 @@ const {auth, authorizeRoles} = require('../middleware/auth')
 
 
 // classroom routes
-router.post('/addClassroom', auth, authorizeRoles('teacher', 'admin'), assignmentController.addAssignment)
-router.get('/', auth,assignmentController.getAllAssignments)
-//router.get('/:id', auth,classroomController.getOneClassroom)
-//router.put('/:id', auth, authorizeRoles('admin'), classroomController.updateClassroom)
-//router.delete('/:id', auth, authorizeRoles('admin'), classroomController.deleteClassroom)
+router.get('/',auth,assignmentController.getAllAssignments)
+router.post('/addAssignment', auth, authorizeRoles('teacher'), assignmentController.addAssignment)
+
+router.get('/:id', auth, assignmentController.getAssignmentById)
+router.put('/:id', auth, authorizeRoles('teacher'), assignmentController.updateAssignment)
+router.delete('/:id', auth, authorizeRoles('teacher'), assignmentController.deleteAssignment)
 
 module.exports = router

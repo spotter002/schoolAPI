@@ -8,6 +8,8 @@ const {auth, authorizeRoles} = require('../middleware/auth')
 router.post('/', auth, authorizeRoles('admin'), teacherController.addTeacher)
 router.get('/', auth, teacherController.getAllTeachers)
 router.get('/classes',auth,teacherController.getMyClasses)
+router.get('/assignments',auth,teacherController.getMyAssignments)
+
 router.put('/self', auth, authorizeRoles('teacher'), teacherController.updateTeacher)
 router.delete('/:id', auth, authorizeRoles('admin'), teacherController.deleteTeacher)
 router.get('/:id', auth, teacherController.getTeacherById)

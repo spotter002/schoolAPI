@@ -1,4 +1,4 @@
-const { Teacher, User, Classroom } = require('../model/schooldb')
+const { Teacher, User, Classroom, Assignment } = require('../model/schooldb')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
@@ -159,6 +159,25 @@ exports.getMyClasses= async (req, res) => {
         // Find all classrooms where the teacher is assigned
         const classrooms = await Classroom.find({ teacher: user.teacher._id }).populate('students');
         res.status(200).json(classrooms);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+// get teacher assignments
+exports.getMyAssignments = async (req, res) => {
+    try {
+        // Check if the user is a teacher
+        if (req.user.role !== 'teacher') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        // Find the teacher by ID
+        const user = await User.findById(req.user.userId).populate('teacher','name email');
+        if (!user || !user.teacher) {
+            return res.status(404).json({ message: 'Teacher not found' });
+        }
+        // Find all classrooms where the teacher is assigned
+        const assignments = await Assignment.find({ postedBy: user.teacher._id }).populate('postedBy')
+        res.status(200).json(assignments);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

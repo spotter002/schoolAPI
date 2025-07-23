@@ -29,6 +29,14 @@ app.use('/assignment', assignment)
 const teacher = require('./routes/teacherRoute')
 app.use('/teacher', teacher)
 
+//parent route
+const parent = require('./routes/parentRoute')
+app.use('/parent', parent)
+
+//student route
+const student = require('./routes/studentRoute')
+app.use('/student', student)
+
 // connect to the database
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
