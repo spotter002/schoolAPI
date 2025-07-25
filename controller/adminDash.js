@@ -1,4 +1,4 @@
-const {Student, Classroom, Parent, Teacher, User} = require("../model/schooldb")
+const {Student, Classroom, Assignment, Parent, Teacher, User} = require("../model/schooldb")
 // get dashboard data
 exports.getDashboardData = async (req, res) => {
     try {
@@ -31,3 +31,4 @@ exports.getDashboardData = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message })
     }
 }
+
