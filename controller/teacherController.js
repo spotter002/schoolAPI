@@ -134,20 +134,40 @@ exports.updateTeacher = async (req, res) => {
 // delete teacher
 exports.deleteTeacher = async (req, res) => {
     try {
-        const teacher = await Teacher.findByIdAndDelete(req.params.id)
+        const teacherId = req.params.id;
+
+        // Step 1: Delete the teacher
+        const teacher = await Teacher.findByIdAndDelete(teacherId);
         if (!teacher) {
-            return res.status(404).json({ message: 'Teacher not found' })
+            return res.status(404).json({ message: 'Teacher not found' });
         }
 
-        const user =await User.find({teacher:teacher._id})
-        if(user){
-            await User.findByIdAndDelete(user._id)
+        // Step 2: Delete the associated user
+        const user = await User.findOne({ teacher: teacherId });
+        if (user) {
+            await User.findByIdAndDelete(user._id);
         }
-        res.status(200).json({ message: 'Teacher deleted successfully', teacher: teacher })
+
+        // Step 3: Remove teacher reference from all classes
+        const updatedClasses = await Classroom.updateMany(
+            { teacher: teacherId }, // adjust field name if it's different
+            { $unset: { teacher: "" } } // or use $set: { teacher: null } depending on your schema
+        );
+
+        res.status(200).json({ 
+            message: 'Teacher deleted successfully, user removed, and teacher unassigned from classes',
+            deletedTeacher: teacher,
+            deletedUser: user || null,
+            updatedClassesCount: updatedClasses.modifiedCount
+        });
+
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error: error.message })
+        res.status(500).json({ 
+            message: 'Internal server error', 
+            error: error.message 
+        });
     }
-}
+};
 
 // get teacher classes
 exports.getMyClasses= async (req, res) => {
