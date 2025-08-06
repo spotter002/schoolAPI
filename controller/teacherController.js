@@ -138,6 +138,11 @@ exports.deleteTeacher = async (req, res) => {
         if (!teacher) {
             return res.status(404).json({ message: 'Teacher not found' })
         }
+
+        const user =await User.find({teacher:teacher._id})
+        if(user){
+            await User.findByIdAndDelete(user._id)
+        }
         res.status(200).json({ message: 'Teacher deleted successfully', teacher: teacher })
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error: error.message })
