@@ -89,10 +89,18 @@ exports.updateTeacher = async (req, res) => {
         const isAdmin = role === 'admin';
         const isSelf = linkedUser._id.toString() === userId.toString();
         // Step 3: Update Teacher info
-        const { name, email, password, userRole } = req.body;
+        const { name, email, password, userRole, phone, subject } = req.body;
         if (name) {
             teacher.name = name;
             linkedUser.name = name;
+        }
+        if (phone) {
+            teacher.phone = phone;
+            linkedUser.phone = phone;
+        }
+        if (subject) {
+            teacher.subject = subject;
+            linkedUser.subject = subject;
         }
         if (email) {
             teacher.email = email;
