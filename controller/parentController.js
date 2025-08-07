@@ -49,7 +49,7 @@ exports.getAllParents = async (req, res) => {
 exports.getParentById = async (req, res) => {
     try {
         const parentId = req.params.id
-        const parent = await Parent.findById(parentId)
+        const parent = await Parent.findOne({nationalId:parentId})
         if(!parent){
             return res.status(404).json({message:"Parent not found"})
         }
