@@ -82,20 +82,72 @@ exports.getStudentById = async (req, res) => {
     }
  }
 
- // update student 
- exports.updateStudent = async (req, res) => {
-     try {
-         const studentID = req.params.id
-         const updatedStudent = await Student.findByIdAndUpdate(studentID, req.body, { new: true })
-         if (!updatedStudent) {
-             return res.status(404).json({ message: 'Student not found' })
-         }
-         res.status(200).json({ message: 'Student updated successfully', student: updatedStudent })
-     } catch (error) {
-         res.status(500).json({ message: 'Internal server error', error: error.message })
-     }
- }
+// UPDATE student with FormData support
+exports.updateStudent = async (req, res) => {
+  try {
+    const studentID = req.params.id;
 
+    // Validate classroom
+    let classroom = null;
+    if (req.body.classroomID) {
+      classroom = await Classroom.findById(req.body.classroomID);
+      if (!classroom) {
+        return res.status(404).json({ message: 'Classroom not found' });
+      }
+    }
+
+    // Validate parent by National ID
+    let parent = null;
+    if (req.body.parentNationalId) {
+      parent = await Parent.findOne({ nationalId: req.body.parentNationalId });
+      if (!parent) {
+        return res.status(404).json({ message: 'Parent not found' });
+      }
+    }
+
+    // Prepare updated fields from the form
+    const updatedFields = {
+      name: req.body.name,
+      admissionNumber: req.body.admissionNumber,
+      dateOfBirth: req.body.dateOfBirth,
+      gender: req.body.gender,
+      classroom: classroom ? classroom._id : undefined,
+      parent: parent ? parent._id : undefined,
+    };
+
+    // If new photo uploaded, add its path
+    if (req.file) {
+      updatedFields.photo = req.file.path;
+    }
+
+    // Remove undefined fields so they don’t overwrite existing data
+    Object.keys(updatedFields).forEach(
+      (key) => updatedFields[key] === undefined && delete updatedFields[key]
+    );
+
+    // Update student in DB
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentID,
+      updatedFields,
+      { new: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({
+      message: 'Student updated successfully',
+      student: updatedStudent,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Internal server error',
+      error: error.message,
+    });
+  }
+};
  //delete student
  exports.deleteStudent = async (req, res) => {
     try {
