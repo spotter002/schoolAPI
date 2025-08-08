@@ -21,7 +21,7 @@ const upload = multer({ storage });
 router.post('/addStudent', auth, authorizeRoles('admin'), studentController.uploadStudentPhoto, studentController.addStudent)
 router.get('/', auth,studentController.getAllStudents)
 router.get('/:id', auth,studentController.getStudentById)
-router.put('/:id', auth, authorizeRoles('admin'), studentController.updateStudent)
+router.put('/:id', auth, authorizeRoles('admin'), upload.single('photo'), studentController.updateStudent)
 router.delete('/:id', auth, authorizeRoles('admin'), studentController.deleteStudent)
 router.put('/:id', upload.single('photo'), studentController.updateStudent);
 module.exports = router
